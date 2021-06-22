@@ -1,7 +1,14 @@
 from tkinter import *
 from tkinter import ttk
+from PIL import  Image, ImageTk
 from databaseConnector import DB
-
+from marketing import Marketing
+from supply import Supply
+from sales import Sales
+from packaging import Packaging
+from quality import Quality
+from finance import Finance
+from functools import partial
 
 db = DB()
 #retrieve button command
@@ -12,33 +19,27 @@ def retrieve():
     data = []
     if (curState.get() == "marketing"):
         data = db.selectMarketing(brand, pStyleName, pFlavorName)
-        for i in range(0,29):
-            marketingValues[i].set(data[i])
+        marketing.setValues(data)
 
     if (curState.get() == "supply"):
         data = db.selectSupplyPlanning(brand, pStyleName, pFlavorName)
-        for i in range(0, 6):
-            supplyValues[i].set(data[i])
-
+        supply.setValues(data)
+       
     if (curState.get() == "sales"):
         data = db.selectSales(brand, pStyleName, pFlavorName)
-        for i in range(0, 6):
-            salesValues[i].set(data[i])
+        sales.setValues(data)
 
     if (curState.get() == "packaging"):
         data = db.selectPackaging(brand, pStyleName, pFlavorName)
-        for i in range(0, 17):
-            packagingValues[i].set(data[i])
+        packaging.setValues(data)
 
     if (curState.get() == "quality"):
         data = db.selectQuality(brand, pStyleName, pFlavorName)
-        for i in range(0, 15):
-            qualityValues[i].set(data[i])
+        quality.setValues(data)
 
     if (curState.get() == "finance"):
         data = db.selectFinance(brand, pStyleName, pFlavorName)
-        for i in range(0, 3):
-            financeValues[i].set(data[i])
+        finance.setValues(data)
 
 
 #update button command
@@ -48,82 +49,103 @@ def update():
     pFlavorName = productFlavorName.get()
 
     if (curState.get() == "marketing"):
-        values = map(lambda x: x.get(), marketingValues)
+        values = map(lambda x: x.get(), marketing.marketingValues)
         db.insertIntoMarketing(brand, pStyleName, pFlavorName, values)
 
     if (curState.get() == "supply"):
-        values = map(lambda x: x.get(), supplyValues)
+        values = map(lambda x: x.get(), supply.supplyValues)
         db.insertIntoSupplyPlanning(brand, pStyleName, pFlavorName, values)
 
     if (curState.get() == "sales"):
-        values = map(lambda x: x.get(), salesValues)
+        values = map(lambda x: x.get(), sales.salesValues)
         db.insertIntoSales(brand, pStyleName, pFlavorName, values)
 
     if (curState.get() == "packaging"):
-        values = map(lambda x: x.get(), packagingValues)
+        values = map(lambda x: x.get(), packaging.packagingValues)
         db.insertIntoPackaging(brand, pStyleName, pFlavorName, values)
 
     if (curState.get() == "quality"):
-        values = map(lambda x: x.get(), qualityValues)
+        values = map(lambda x: x.get(), quality.qualityValues)
         db.insertIntoQuality(brand, pStyleName, pFlavorName, values)
 
     if (curState.get() == "finance"):
-        values = map(lambda x: x.get(), financeValues)
+        values = map(lambda x: x.get(), finance.financeValues)
         db.insertIntoFinance(brand, pStyleName, pFlavorName, values)
 
 
 def marketingOnClick():
     curState.set("marketing")
-    supplyframe.grid_forget()
-    marketingframe.grid_forget()
-    packagingframe.grid_forget()
-    qualityframe.grid_forget()
-    financeframe.grid_forget()
-    marketingframe .grid(column = 0, row = 2, sticky=(N, W, E, S))
+    supply.forget()
+    sales.forget()
+    packaging.forget()
+    quality.forget()
+    finance.forget()
+    marketing.draw()
 
 def supplyOnClick():
    curState.set("supply")
-   marketingframe.grid_forget()
-   salesframe.grid_forget()
-   packagingframe.grid_forget()
-   qualityframe.grid_forget()
-   financeframe.grid_forget()
-   supplyframe.grid(column = 0, row = 2, sticky = (N, W, E, S))
+   sales.forget()
+   packaging.forget()
+   quality.forget()
+   finance.forget()
+   supply.draw()
 
 def salesOnClick():
     curState.set("sales")
-    marketingframe.grid_forget()
-    supplyframe.grid_forget()
-    packagingframe.grid_forget()
-    qualityframe.grid_forget()
-    financeframe.grid_forget()
-    salesframe.grid(column = 0, row = 2, sticky = (N, W, E, S))
+    marketing.forget()
+    supply.forget()
+    packaging.forget()
+    quality.forget()
+    finance.forget()
+    sales.draw()
 
 def packagingOnClick():
     curState.set("packaging")
-    marketingframe.grid_forget()
-    supplyframe.grid_forget()
-    salesframe.grid_forget()
-    qualityframe.grid_forget()
-    financeframe.grid_forget()
-    packagingframe.grid(column = 0, row = 2, sticky = (N, W, E, S))
+    marketing.forget()
+    supply.forget()
+    sales.forget()
+    quality.forget()
+    finance.forget()
+    packaging.draw()
 
 def qualityOnClick():
     curState.set("quality")
-    marketingframe.grid_forget()
-    supplyframe.grid_forget()
-    salesframe.grid_forget()
-    packagingframe.grid_forget()
-    financeframe.grid_forget()
-    qualityframe.grid(column = 0, row = 2, sticky = (N, W, E, S))
+    marketing.forget()
+    supply.forget()
+    sales.forget()
+    packaging.forget()
+    finance.forget()
+    quality.draw()
 
 def financeOnClick():
     curState.set('finance')
-    marketingframe.grid_forget()
-    supplyframe.grid_forget()
-    salesframe.grid_forget()
-    packagingframe.grid_forget()
-    financeframe.grid(column = 0, row = 2, sticky = (N, W, E, S))
+    marketing.forget()
+    supply.forget()
+    sales.forget()
+    packaging.forget()
+    quality.forget()
+    finance.draw()
+
+def createOnClick():
+    createPop= Toplevel(root)
+    createPopLabel = ttk.Label(createPop, text = "Do you want to add object?  \n" + bName.get() + ' \n'
+                              + productStyleName.get() + ' \n' + productFlavorName.get(), font = '12')
+    style = ttk.Style()
+    style.configure('No.TButton', foreground = 'red', )
+    style.configure('Yes.TButton', foreground = 'green')
+    createPopNoButton  = ttk.Button(createPop, text = "No", style = 'No.TButton', command = createPop.destroy)
+    createPopYesButton = ttk.Button(createPop, text = "Yes", style = 'Yes.TButton', command = lambda: createNewObject(createPop) )
+    createPopLabel.grid(row = 0, column = 1, sticky = (N, W, E, S))
+    createPopNoButton .grid(row = 1, column = 0)
+    createPopYesButton.grid(row = 1, column = 2)
+    
+
+def createNewObject(pop):
+    pop.destroy()
+    brand       = bName.get()
+    pStyleName  = productStyleName.get()
+    pFlavorName = productFlavorName.get()
+    db.createObject(brand, pStyleName, pFlavorName)
 
 root = Tk();
 root.title('Database Manager')
@@ -156,6 +178,13 @@ productFlavorName   = StringVar()
 productFlavor_entry = ttk.Entry(mainframe, width = 20, textvariable = productFlavorName)
 productFlavor_entry .grid(column = 2, row = 3, sticky = W)
 
+crudeImage = Image.open("logo.png")
+crudeImage = crudeImage.resize((200,100), Image.ANTIALIAS)
+
+img = ImageTk.PhotoImage(crudeImage)
+canvas = Label(mainframe, image = img)
+canvas.grid(column = 3,  row = 1, rowspan = 3)
+
 
 
 # switch button frames
@@ -164,7 +193,7 @@ curState.set("marketing")
 buttonFrame         = ttk.Frame(root)
 buttonFrame         .grid(column = 0, row = 1, sticky=(N, W, E, S))
 
-marketingButton     = ttk.Button(buttonFrame, text = "Marketing", command = marketingOnClick)
+marketingButton     = ttk.Button(buttonFrame, text = "Marketing",  command = marketingOnClick)
 marketingButton     .grid(column = 0, row = 1, sticky = W)
 
 supplyButton        = ttk.Button(buttonFrame, text = "Supply", command = supplyOnClick)
@@ -182,117 +211,28 @@ qualityButton       .grid(column = 4, row = 1, sticky = W)
 financeButton       = ttk.Button(buttonFrame, text = "Finance", command = financeOnClick)
 financeButton       .grid(column = 5, row = 1, sticky = W)
 
+createButton        = ttk.Button(buttonFrame, text = "Create", command = createOnClick)
+createButton        .grid(column = 6, row = 1, padx = (15,5), sticky = W)
 
 #Displaying marketing section
-marketingframe = ttk.Frame(root, padding = "3 3 12 12")
-marketingframe .grid(column = 0, row = 2, sticky=(N, W, E, S))
-
-marketingList = ["Format", "FoodServiceBulkPack", "EachUPC",
-                "EachWeight", "EachUOM", "QtyPerInner",
-                "InnerPackUPC", "InnerWeight", "InnerUOM",
-                "QtyPerCase", "CaseUPC", "CaseWeight", "CaseUOM",
-                "QtyCasesperPallet", "CaseGTIN", "Short Description",
-                "Long Description", "FrontImage", "RearImage",
-                "Layflat", "Perishable", "IsMultiPack", "IsVarietyPack",
-                "IsDisplayShipper", "PalletUPC", "PalletWeight",
-                "PalletUOM", "PalletTi", "PalletHi"]
-
-marketingValues = []
-
-x = 0
-for i in range(0,15):
-    ttk.Label(marketingframe, text = marketingList[i]).grid(column = 1, row = x, sticky = W)
-    marketingValues.append(StringVar())
-    entry = ttk.Entry(marketingframe, width = 20, textvariable = marketingValues[i])
-    entry.grid(column = 2, row = x, sticky = W)
-    x+=1
-
-for i in range(15,29):
-    ttk.Label(marketingframe, text = marketingList[i]).grid(column = 3, row = x-15, sticky = W)
-    marketingValues.append(StringVar());
-    entry = ttk.Entry(marketingframe, width = 20, textvariable = marketingValues[i])
-    entry.grid(column = 4, row = x-15, sticky = W)
-    x+=1
-
-
+marketing  = Marketing(root)
+marketing.draw()
 
 #displaying supply planning window
-supplyframe = ttk.Frame(root, padding = "3 3 12 12")
-
-supplyList =	['MinOrderCases', 'Warehouse', 'PalletPickPriority',
-				'FreightClass', 'NMFC,', 'Manufacture']
-supplyValues = []
-x = 0
-for i in range(0, 6):
-    ttk.Label(supplyframe, text = supplyList[i]).grid(column = 1, row = x, sticky = W)
-    supplyValues.append(StringVar())
-    entry = ttk.Entry(supplyframe, width = 20, textvariable = supplyValues[i])
-    entry.grid(column = 2, row = x, sticky = W)
-    x+=1
+supply =  Supply(root)
 
 #displaying sales window
-salesframe = ttk.Frame(root, padding = "3 3 12 12")
-
-salesList =  ['DistributorDeliveredCasePrice', 'SRP', 'PlanogramDepth', 'PlanogramHeight', 'PlanogramWidth', 'VendorSKU']
-
-salesValues = []
-x = 0
-for i in range(0, 6):
-    ttk.Label(salesframe, text = salesList[i]).grid(column = 1, row = x, sticky = W)
-    salesValues.append(StringVar())
-    entry = ttk.Entry(salesframe, width = 20, textvariable = salesValues[i])
-    entry.grid(column = 2, row = x, sticky = W)
-    x+=1
+sales = Sales(root)
 
 #displaying Packaging engineering window
-packagingframe = ttk.Frame(root, padding = "3 3 12 12")
-
-packagingList = [ "EachHeight", "EachWidth", "EachDepth", "InnerHeight", "InnerWidth", "InnerDepth",
-            "CaseHeight", "CaseWidth", "CaseDepth", "CaseCube", "PalletHeight", "PalletWidth", "PalletDepth", 
-            "PackagingDieline", "PackagingSpec", "CaseDieline", "PalletConfig" ]
-
-packagingValues = []
-
-x = 0
-for i in range (0, 17):
-    ttk.Label(packagingframe, text = packagingList[i]).grid(column = 1, row = x, sticky = W)
-    packagingValues.append(StringVar())
-    entry = ttk.Entry(packagingframe, width = 20, textvariable = packagingValues[i])
-    entry.grid(column = 2, row = x, sticky = W)
-    x+=1
+packaging = Packaging(root)
 
 #displaying quality window
-qualityframe = ttk.Frame(root, padding = "3 3 12 12")
-
-qualityList = [ 'CountryOfOriginName', 'CodeDateExample', 'CodeDateFormula', 'CodeDateType', 'CodeDateStamp',
-            'ShelfLifeDaysGuarantee', 'ShelfLifeDaysAtProduction', 'ShippingCondition', 'StorageCondition',
-            'ShippingTemperatureRangeHigh', 'ShippingTemperatureRangeLow', 'StorageTemperatureRangeHigh', 
-            'StorageTemperatureRangeLow', 'NFP', 'Ingredients']
-
-qualityValues = []
-
-x = 0
-for i in range (0, 15):
-    ttk.Label(qualityframe, text = qualityList[i]).grid(column = 1, row = x, sticky = W)
-    qualityValues.append(StringVar())
-    entry = ttk.Entry(qualityframe, width = 20, textvariable = qualityValues[i])
-    entry.grid(column = 2, row = x, sticky = W)
-    x+=1
+quality = Quality(root)
 
 #displaying finance window
-financeframe = ttk.Frame(root, padding = "3 3 12 12")
+finance = Finance(root)
 
-financeList = [ 'UnitCost', 'CaseCost', 'Internal Item Numberr' ]
-
-financeValues = []
-
-x = 0
-for i in range (0, 3):
-    ttk.Label(financeframe, text = financeList[i]).grid(column = 1, row = x, sticky = W)
-    financeValues.append(StringVar())
-    entry = ttk.Entry(financeframe, width = 20, textvariable = financeValues[i])
-    entry.grid(column = 2, row = x, sticky = W)
-    x+=1
 
 
 #retrieve button
@@ -309,24 +249,6 @@ retrieveButton.grid_configure(padx = 20, pady = 10)
 
 # padding every element in the frames
 for child in mainframe.winfo_children(): 
-    child.grid_configure(padx = 5, pady = 5)
-
-for child in marketingframe.winfo_children(): 
-    child.grid_configure(padx = 5, pady = 5)
-
-for child in supplyframe.winfo_children():
-    child.grid_configure(padx = 5, pady = 5)
-
-for child in salesframe.winfo_children():
-    child.grid_configure(padx = 5, pady = 5)
-
-for child in packagingframe.winfo_children():
-    child.grid_configure(padx = 5, pady = 5)
-
-for child in qualityframe.winfo_children():
-    child.grid_configure(padx = 5, pady = 5)
-
-for child in financeframe.winfo_children():
     child.grid_configure(padx = 5, pady = 5)
 
 

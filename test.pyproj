@@ -22,8 +22,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="databaseConnector.py" />
+    <Compile Include="finance.py" />
+    <Compile Include="marketing.py" />
+    <Compile Include="packaging.py" />
+    <Compile Include="quality.py" />
+    <Compile Include="sales.py" />
     <Compile Include="supply.py" />
     <Compile Include="window.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

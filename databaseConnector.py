@@ -5,18 +5,31 @@ import pyodbc
 class DB:
 
     def __init__(self):
-        self.con = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\LeksoBorashvili\source\repos\test\test\masterData.accdb;')
+        server = 'factorydataserver.database.windows.net'
+        database = 'DataBase1'
+        username = 'Kpursell'
+        password = 'F@ct0ry315'
+        driver= '{ODBC Driver 17 for SQL Server}'
+        with pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) as conn:
+            self.con = conn
+        #self.con = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\LeksoBorashvili\source\repos\test\test\masterData.accdb;')
         self.cursor = self.con.cursor()
+
+
+    def createObject(self, brandName, productStyle, productFlavor):
+        self.cursor.execute("""INSERT INTO MasterDataTable (Key1, BrandName, ProductStyle, ProductFlavor)
+                            VALUES(?,?,?,?) """, 7, brandName, productStyle, productFlavor)
+        self.cursor.commit()
 
 
     def selectMarketing(self, brandName, productStyle, productFlavor):
         self.cursor.execute("""SELECT Format, FoodServiceBulkPack, EachUPC,
-            EachWeight, EachUOM, QtyPerInner, InnerPackUPC, InnerWeight, InnerUOM, QtyPerCase, CaseUPC, CaseWeight, CaseUOM,
-            QtyCasesperPallet, CaseGTIN, [Short Description], [Long Description], FrontImage, RearImage, Layflat, Perishable,
-            IsMultiPack, IsVarietyPack, IsDisplayShipper, PalletUPC, PalletWeight, PalletUOM, PalletTi, PalletHi
-            FROM [Master Table] 
+            EachWeight, EachUOM, QtyPerInner, InnerPackUPC, InnerWeight, InnerUOM, QtyPerCase, CaseUPC, CaseWeightLbs, CaseUOM,
+            QtyCasesperPallet, CaseGTIN, Description, Description2, FrontImage, RearImage, Layflat, Perishable,
+            IsMultiPack, IsVarietyPack, IsDisplayShipper, PalletUPC, PalletWeightLbs, PalletUOM, PalletTie, PalletHigh
+            FROM MasterDataTable 
             WHERE BrandName = ? 
-            AND [ProductStyle /Category] = ? 
+            AND ProductStyle = ? 
             AND ProductFlavor = ? """,
         brandName, productStyle, productFlavor)
         marketingData = self.cursor.fetchone()
@@ -28,25 +41,25 @@ class DB:
         conv_list.append(brandName)
         conv_list.append(productStyle)
         conv_list.append(productFlavor)
-        self.cursor.execute("""UPDATE [Master Table] SET Format = ?, FoodServiceBulkPack = ?, EachUPC = ?,
+        self.cursor.execute("""UPDATE MasterDataTable SET Format = ?, FoodServiceBulkPack = ?, EachUPC = ?,
             EachWeight = ?, EachUOM = ?, QtyPerInner = ?, InnerPackUPC = ?, InnerWeight = ?,
-            InnerUOM = ?, QtyPerCase = ?, CaseUPC = ?, CaseWeight = ?, CaseUOM = ?,
-            QtyCasesperPallet = ?, CaseGTIN = ?, [Short Description] = ?, [Long Description] = ?,
+            InnerUOM = ?, QtyPerCase = ?, CaseUPC = ?, CaseWeightLbs = ?, CaseUOM = ?,
+            QtyCasesperPallet = ?, CaseGTIN = ?, Description = ?, Description2 = ?,
             FrontImage = ?, RearImage = ?, Layflat = ?, Perishable = ?,
-            IsMultiPack = ?, IsVarietyPack = ?, IsDisplayShipper = ?, PalletUPC = ?, PalletWeight = ?, PalletUOM = ?,
-            PalletTi = ?, PalletHi = ? 
+            IsMultiPack = ?, IsVarietyPack = ?, IsDisplayShipper = ?, PalletUPC = ?, PalletWeightLbs = ?, PalletUOM = ?,
+            PalletTie = ?, PalletHigh = ? 
             WHERE ((BrandName = ?) 
-            AND ([ProductStyle /Category] = ?) 
+            AND (ProductStyle = ?) 
             AND (ProductFlavor = ?)) """, conv_list)
         self.con.commit()
 
     
     def selectSupplyPlanning(self, brandName, productStyle, productFlavor):
         self.cursor.execute("""SELECT  
-            MinOrderCases, Warehouse, PalletPickPriority, FreightClass, NMFC, Manufacture
-            FROM [Master Table]
+            MinOrderCases, Warehouse, PalletPickPriority, FreightClass, NMFC, Manufacturer
+            FROM MasterDataTable
             WHERE BrandName = ?
-            AND [ProductStyle /Category] = ? 
+            AND ProductStyle = ? 
             AND ProductFlavor = ? """, 
         brandName, productStyle, productFlavor)
         return self.cursor.fetchone()
@@ -57,20 +70,20 @@ class DB:
         conv_list.append(brandName)
         conv_list.append(productStyle)
         conv_list.append(productFlavor)
-        self.cursor.execute("""UPDATE [Master Table] SET MinOrderCases = ?, Warehouse = ?,
-            PalletPickPriority = ?, FreightClass = ?, NMFC = ?, Manufacture = ? 
+        self.cursor.execute("""UPDATE MasterDataTable SET MinOrderCases = ?, Warehouse = ?,
+            PalletPickPriority = ?, FreightClass = ?, NMFC = ?, Manufacturer = ? 
             WHERE ((BrandName = ?) 
-            AND ([ProductStyle /Category] = ?) 
+            AND (ProductStyle = ?) 
             AND (ProductFlavor = ?)) """, conv_list)
         self.con.commit()
 
 
     def selectSales(self, brandName, productStyle, productFlavor):
         self.cursor.execute("""SELECT 
-            DistributorDeliveredCasePrice, SRP, PlanogramDepth, PlanogramHeight, PlanogramWidth, VendorSKU
-            FROM [Master Table]
+            DistributorDeliveredCaseCost, SRP, PlanogramDepth, PlanogramHeight, PlanogramWidth, VendorSKU
+            FROM MasterDataTable
             WHERE BrandName = ?
-            AND [ProductStyle /Category] = ? 
+            AND ProductStyle = ? 
             AND ProductFlavor = ? """, 
         brandName, productStyle, productFlavor)
         return self.cursor.fetchone()
@@ -81,10 +94,10 @@ class DB:
         conv_list.append(brandName)
         conv_list.append(productStyle)
         conv_list.append(productFlavor)
-        self.cursor.execute("""UPDATE [Master Table] SET DistributorDeliveredCasePrice =?, SRP = ?,
+        self.cursor.execute("""UPDATE MasterDataTable SET DistributorDeliveredCaseCost =?, SRP = ?,
             PlanogramDepth = ?, PlanogramHeight = ?, PlanogramWidth = ?, VendorSKU = ?
             WHERE ((BrandName = ?) 
-            AND ([ProductStyle /Category] = ?) 
+            AND (ProductStyle = ?) 
             AND (ProductFlavor = ?))""", conv_list)
         self.con.commit()
 
@@ -94,9 +107,9 @@ class DB:
             EachHeight, EachWidth, EachDepth, InnerHeight, InnerWidth, InnerDepth,
             CaseHeight, CaseWidth, CaseDepth, CaseCube, PalletHeight, PalletWidth, PalletDepth, 
             PackagingDieline, PackagingSpec, CaseDieline, PalletConfig
-            FROM [Master Table]
+            FROM MasterDataTable
             WHERE BrandName = ?
-            AND [ProductStyle /Category] = ? 
+            AND ProductStyle = ? 
             AND ProductFlavor = ? """, 
         brandName, productStyle, productFlavor)
         return self.cursor.fetchone()
@@ -107,12 +120,12 @@ class DB:
         conv_list.append(brandName)
         conv_list.append(productStyle)
         conv_list.append(productFlavor)
-        self.cursor.execute("""UPDATE [Master Table] SET EachHeight = ?, EachWidth = ?, EachDepth = ?, InnerHeight = ?,
+        self.cursor.execute("""UPDATE MasterDataTable SET EachHeight = ?, EachWidth = ?, EachDepth = ?, InnerHeight = ?,
             InnerWidth = ?, InnerDepth = ?, CaseHeight = ?, CaseWidth = ?, CaseDepth = ?, CaseCube = ?,
             PalletHeight = ?, PalletWidth = ?, PalletDepth = ?, PackagingDieline = ?, PackagingSpec = ?,
             CaseDieline = ?, PalletConfig = ?
             WHERE ((BrandName = ?) 
-            AND ([ProductStyle /Category] = ?) 
+            AND (ProductStyle = ?) 
             AND (ProductFlavor = ?))""", conv_list)
         self.con.commit()
 
@@ -123,9 +136,9 @@ class DB:
             ShelfLifeDaysGuarantee, ShelfLifeDaysAtProduction, ShippingCondition, StorageCondition,
             ShippingTemperatureRangeHigh, ShippingTemperatureRangeLow, StorageTemperatureRangeHigh, 
             StorageTemperatureRangeLow, NFP, Ingredients
-            FROM [Master Table]
+            FROM MasterDataTable
             WHERE BrandName = ?
-            AND [ProductStyle /Category] = ? 
+            AND ProductStyle = ? 
             AND ProductFlavor = ? """, 
         brandName, productStyle, productFlavor)
         return self.cursor.fetchone()
@@ -136,22 +149,22 @@ class DB:
         conv_list.append(brandName)
         conv_list.append(productStyle)
         conv_list.append(productFlavor)
-        self.cursor.execute("""UPDATE [Master Table] SET CountryOfOriginName = ?, CodeDateExample = ?, CodeDateFormula = ?,
+        self.cursor.execute("""UPDATE MasterDataTable SET CountryOfOriginName = ?, CodeDateExample = ?, CodeDateFormula = ?,
             CodeDateType = ?, CodeDateStamp = ?, ShelfLifeDaysGuarantee = ?, ShelfLifeDaysAtProduction = ?,
             ShippingCondition = ?, StorageCondition = ?, ShippingTemperatureRangeHigh = ?, ShippingTemperatureRangeLow = ?, 
             StorageTemperatureRangeHigh = ?, StorageTemperatureRangeLow = ?, NFP = ?, Ingredients = ?
             WHERE ((BrandName = ?) 
-            AND ([ProductStyle /Category] = ?) 
+            AND (ProductStyle = ?) 
             AND (ProductFlavor = ?))""", conv_list)
         self.con.commit()
 
 
     def selectFinance(self, brandName, productStyle, productFlavor):
         self.cursor.execute("""SELECT 
-            UnitCost, CaseCost, [Internal Item Numberr]
-            FROM [Master Table]
+            UnitCost, CaseCost, InternalItemNumber
+            FROM MasterDataTable
             WHERE BrandName = ?
-            AND [ProductStyle /Category] = ? 
+            AND ProductStyle = ? 
             AND ProductFlavor = ? """, 
         brandName, productStyle, productFlavor)
         return self.cursor.fetchone()
@@ -162,9 +175,9 @@ class DB:
         conv_list.append(brandName)
         conv_list.append(productStyle)
         conv_list.append(productFlavor)
-        self.cursor.execute("""UPDATE [Master Table] SET UnitCost = ?, CaseCost = ?, [Internal Item Numberr] = ?
+        self.cursor.execute("""UPDATE MasterDataTable SET UnitCost = ?, CaseCost = ?, InternalItemNumber = ?
             WHERE ((BrandName = ?) 
-            AND ([ProductStyle /Category] = ?) 
+            AND (ProductStyle = ?) 
             AND (ProductFlavor = ?))""", conv_list)
         self.con.commit()
 
