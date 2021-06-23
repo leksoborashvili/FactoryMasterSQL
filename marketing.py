@@ -5,19 +5,19 @@ from tkinter import ttk
 class Marketing:
 
     def __init__(self, root):
-        self.marketingframe = ttk.Frame(root, padding = "3 3 12 12")
+        self.marketingframe = ttk.Frame(root, padding = "30 3 30 15")
         x = 0
         for i in range(0,15):
             ttk.Label(self.marketingframe, text = self.marketingList[i]).grid(column = 1, row = x, sticky = W)
             self.marketingValues.append(StringVar())
-            entry = ttk.Entry(self.marketingframe, width = 20, textvariable = self.marketingValues[i])
+            entry = ttk.Entry(self.marketingframe, width = 20, font = "10", textvariable = self.marketingValues[i])
             entry.grid(column = 2, row = x, sticky = W)
             x+=1
 
         for i in range(15,29):
             ttk.Label(self.marketingframe, text = self.marketingList[i]).grid(column = 3, row = x-15, sticky = W)
             self.marketingValues.append(StringVar());
-            entry = ttk.Entry(self.marketingframe, width = 20, textvariable = self.marketingValues[i])
+            entry = ttk.Entry(self.marketingframe, width = 20, font = "10", textvariable = self.marketingValues[i])
             entry.grid(column = 4, row = x-15, sticky = W)
             x+=1
 

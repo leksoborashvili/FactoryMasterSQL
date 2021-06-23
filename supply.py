@@ -11,7 +11,7 @@ class Supply:
         for i in range(0, 6):
             ttk.Label(self.supplyframe, text = self.supplyList[i]).grid(column = 1, row = x, sticky = W)
             self.supplyValues.append(StringVar())
-            entry = ttk.Entry(self.supplyframe, width = 20, textvariable = self.supplyValues[i])
+            entry = ttk.Entry(self.supplyframe, width = 20, font = "10", textvariable = self.supplyValues[i])
             entry.grid(column = 2, row = x, sticky = W)
             x+=1
 

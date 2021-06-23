@@ -9,7 +9,7 @@ class Sales:
         for i in range(0, 6):
             ttk.Label(self.salesframe, text = self.salesList[i]).grid(column = 1, row = x, sticky = W)
             self.salesValues.append(StringVar())
-            entry = ttk.Entry(self.salesframe, width = 20, textvariable = self.salesValues[i])
+            entry = ttk.Entry(self.salesframe, width = 20, font = "10", textvariable = self.salesValues[i])
             entry.grid(column = 2, row = x, sticky = W)
             x+=1
         

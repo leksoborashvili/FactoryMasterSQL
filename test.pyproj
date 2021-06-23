@@ -23,12 +23,18 @@
   <ItemGroup>
     <Compile Include="databaseConnector.py" />
     <Compile Include="finance.py" />
+    <Compile Include="loginwindow.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="marketing.py" />
+    <Compile Include="app.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="packaging.py" />
     <Compile Include="quality.py" />
     <Compile Include="sales.py" />
     <Compile Include="supply.py" />
-    <Compile Include="window.py" />
+    <Compile Include="mainwindow.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="logo.png" />

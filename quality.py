@@ -9,7 +9,7 @@ class Quality:
         for i in range (0, 15):
             ttk.Label(self.qualityframe, text = self.qualityList[i]).grid(column = 1, row = x, sticky = W)
             self.qualityValues.append(StringVar())
-            entry = ttk.Entry(self.qualityframe, width = 20, textvariable = self.qualityValues[i])
+            entry = ttk.Entry(self.qualityframe, width = 20, font = "10", textvariable = self.qualityValues[i])
             entry.grid(column = 2, row = x, sticky = W)
             x+=1
 

@@ -9,7 +9,7 @@ class Finance:
         for i in range (0, 3):
             ttk.Label(self.financeframe, text = self.financeList[i]).grid(column = 1, row = x, sticky = W)
             self.financeValues.append(StringVar())
-            entry = ttk.Entry(self.financeframe, width = 20, textvariable = self.financeValues[i])
+            entry = ttk.Entry(self.financeframe, width = 20, font = "10", textvariable = self.financeValues[i])
             entry.grid(column = 2, row = x, sticky = W)
             x+=1
 
