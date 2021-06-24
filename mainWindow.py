@@ -11,7 +11,7 @@ from finance import Finance
 from functools import partial
 
 class MW:
-    def __init__(self, root):
+    def __init__(self, root, logout):
 
         self.root = root
         self.db = DB()
@@ -99,12 +99,16 @@ class MW:
         commandButtonframe . grid(column = 0, row = 3, sticky = (N, W, E, S))
 
         retrieveButton  =  ttk.Button(commandButtonframe, text = "Retrieve", command = self.retrieve)
-        retrieveButton.grid(column = 0, row = 0, sticky = W)
-        retrieveButton.grid_configure(padx = 20, pady = 10)
+        retrieveButton  .grid(column = 0, row = 0, sticky = W)
+        retrieveButton  .grid_configure(padx = 20, pady = 10)
 
         updateButton    = ttk.Button(commandButtonframe, text = "Update", command = self.update)
-        updateButton.grid(column = 2, row = 0, sticky = W)
-        retrieveButton.grid_configure(padx = 20, pady = 10)
+        updateButton    .grid(column = 2, row = 0, sticky = W)
+        retrieveButton  .grid_configure(padx = 20, pady = 10)
+
+        logoutButton    = ttk.Button(commandButtonframe, text = "Logout", command = logout)
+        logoutButton    .grid(column = 4, row = 0, sticky = E)
+        logoutButton    .grid_configure(padx = 50, pady = 10)
 
         # padding every element in the frames
         for child in navigationLabels.winfo_children(): 
