@@ -15,26 +15,27 @@ class Authorization():
                   "scope": [ "User.ReadBasic.All" ],
                   "endpoint": "https://graph.microsoft.com/v1.0/me/"
                   }
-
-    def authorize(self, username, password, failedLogin):
-        app = msal.PublicClientApplication(
+        self.app = msal.PublicClientApplication(
         self.config["client_id"], authority=self.config["authority"],
         # token_cache=...  # Default cache is in memory only.
                            # You can learn how to use SerializableTokenCache from
                            # https://msal-python.rtfd.io/en/latest/#msal.SerializableTokenCache
         )
+
+    def authorize(self, username, password, failedLogin):
+        self.username = username
         result = None
-        accounts = app.get_accounts(username = username)
+        accounts = self.app.get_accounts(username = username)
         if accounts:
             logging.info("Account(s) exists in cache, probably with token too. Let's try.")
-            result = app.acquire_token_silent(self.config["scope"], account=accounts[0])
+            result = self.app.acquire_token_silent(self.config["scope"], account=accounts[0])
         if not result:
             logging.info("No suitable token exists in cache. Let's get a new one from AAD.")
             # See this page for constraints of Username Password Flow.
             # https://github.com/AzureAD/microsoft-authentication-library-for-python/wiki/Username-Password-Authentication
-            result = app.acquire_token_by_username_password(
+            result = self.app.acquire_token_by_username_password(
                 username, password, scopes=self.config["scope"])
-
+         
         if "access_token" in result:
             # Calling graph using the access token
             graph_data = requests.get(  # Use token to call downstream service
@@ -50,10 +51,17 @@ class Authorization():
             if 65001 in result.get("error_codes", []):  # Not mean to be coded programatically, but...
                 # AAD requires user consent for U/P flow
                 #TODO
-                print("Visit this to consent:", app.get_authorization_request_url(self.config["scope"]))
-                failedLogin(app.get_authorization_request_url(self.config["scope"]))
+                print("Visit this to consent:", self.app.get_authorization_request_url(self.config["scope"]))
+                failedLogin(self.app.get_authorization_request_url(self.config["scope"]))
             return None
 
+    def logout(self):
+        accounts = self.app.get_accounts(username = self.username)
+        print(accounts[0])
+        if accounts:
+            print("Account(s) exists in cache, probably with token too. Let's try.")
+            result = self.app.acquire_token_silent(self.config["scope"], account=accounts[0])
+            self.app.remove_account(account = accounts[0])
 
 
 

@@ -24,6 +24,9 @@
     <Compile Include="auth.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="image.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="databaseConnector.py" />
     <Compile Include="finance.py" />
     <Compile Include="loginwindow.py">

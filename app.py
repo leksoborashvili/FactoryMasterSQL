@@ -12,7 +12,8 @@ class App:
         if(auth.authorize(login.userName.get(), login.passWord.get(), self.failedLogin)):
             login.forget()
             login.passWord.set("")
-            mw.draw()
+            self.mw = MW(root, app.logout)
+            self.mw.draw()
         
     def failedLogin(self,errorMessage):
         errorWindow = Toplevel(root)
@@ -20,22 +21,23 @@ class App:
         errorLabel.grid(column = 0, row = 0)
 
     def logout(self):
-        mw.forget()
+        self.mw.forget()
         login.draw()
+        auth.logout()
 
 
 
 
 app = App()
-
 auth = Authorization()
 
 root = Tk();
 root.title('Database Manager')
+
 login = Login(root,app.signIn)
 login.draw()
 
-mw = MW(root, app.logout)
+
 #mw.draw()
 
 

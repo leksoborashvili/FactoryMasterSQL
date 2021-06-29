@@ -1,5 +1,6 @@
 import pyodbc
-
+import io
+from PIL import  Image, ImageTk
 
 
 class DB:
@@ -17,8 +18,8 @@ class DB:
 
 
     def createObject(self, brandName, productStyle, productFlavor):
-        self.cursor.execute("""INSERT INTO MasterDataTable (Key1, BrandName, ProductStyle, ProductFlavor)
-                            VALUES(?,?,?,?) """, 7, brandName, productStyle, productFlavor)
+        self.cursor.execute("""INSERT INTO MasterDataTable (BrandName, ProductStyle, ProductFlavor)
+                            VALUES(?,?,?) """, brandName, productStyle, productFlavor)
         self.cursor.commit()
 
 
@@ -181,7 +182,29 @@ class DB:
             AND (ProductFlavor = ?))""", conv_list)
         self.con.commit()
 
+    def selectImg(self, brandName, productStyle, productFlavor):
+        self.cursor.execute("""SELECT
+            Icon FROM MasterDataTable 
+            WHERE BrandName = ?
+            AND ProductStyle = ?
+            AND ProductFlavor = ? """,
+        brandName, productStyle, productFlavor)
 
+        data  = self.cursor.fetchone()[0]
+        crudeImg = None
+        if data:
+            crudeImg = Image.open(io.BytesIO(data))
+            crudeImg = crudeImg.resize((300,150), Image.ANTIALIAS)
+
+        return crudeImg
+
+    def insertPhoto(self, brandName, productStyle, productFlavor, img_bytes):
+        self.cursor.execute("""UPDATE MasterDataTable SET Icon = ? 
+            WHERE ((BrandName = ?) 
+            AND (ProductStyle = ?) 
+            AND (ProductFlavor = ?))""",
+           img_bytes, brandName, productStyle, productFlavor)
+        self.con.commit()
     def __del__(self):
         self.con.close()
         

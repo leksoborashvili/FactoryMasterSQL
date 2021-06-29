@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import filedialog
 from PIL import  Image, ImageTk
 from databaseConnector import DB
 from marketing import Marketing
@@ -9,6 +10,7 @@ from packaging import Packaging
 from quality import Quality
 from finance import Finance
 from functools import partial
+from image import Img
 
 class MW:
     def __init__(self, root, logout):
@@ -17,38 +19,35 @@ class MW:
         self.db = DB()
         self.mainframe = ttk.Frame(root)
 
-        navigationLabels = ttk.Frame(self.mainframe, padding="3 3 12 12")
-        navigationLabels.grid(column = 0, row = 0, sticky=(N, W, E, S))
+        self.navigationLabels = ttk.Frame(self.mainframe, padding="3 3 12 12")
+        self.navigationLabels.grid(column = 0, row = 0, sticky=(N, W, E, S))
 
         self.mainframe.columnconfigure(0, weight = 1)
         self.mainframe.rowconfigure(0, weight = 1)
 
         # creating navigation top labels
         fontSize = "10"
-        brandName               = ttk.Label(navigationLabels, text="BrandName")
+        brandName               = ttk.Label(self.navigationLabels, text="BrandName")
         brandName               .grid(column=1,row=1, sticky = W)
         self.bName              = StringVar()
-        brandName_entry         = ttk.Entry(navigationLabels, width = 20, font = fontSize, textvariable = self.bName)
+        brandName_entry         = ttk.Entry(self.navigationLabels, width = 20, font = fontSize, textvariable = self.bName)
         brandName_entry         .grid(column = 2, row = 1, sticky = W)
 
-        productStyle            = ttk.Label(navigationLabels, text="ProductStyle")
+        productStyle            = ttk.Label(self.navigationLabels, text="ProductStyle")
         productStyle            .grid(column = 1, row = 2, sticky = W);
         self.productStyleName   = StringVar()
-        productStyle_entry      = ttk.Entry(navigationLabels, width = 20, font = fontSize, textvariable = self.productStyleName)
+        productStyle_entry      = ttk.Entry(self.navigationLabels, width = 20, font = fontSize, textvariable = self.productStyleName)
         productStyle_entry      .grid(column = 2, row = 2, sticky = W)
 
-        productFlavor           = ttk.Label(navigationLabels, text = "ProductFlavor")
+        productFlavor           = ttk.Label(self.navigationLabels, text = "ProductFlavor")
         productFlavor           .grid(column = 1, row = 3, sticky = W)
         self.productFlavorName  = StringVar()
-        productFlavor_entry     = ttk.Entry(navigationLabels, width = 20, font = fontSize, textvariable = self.productFlavorName)
+        productFlavor_entry     = ttk.Entry(self.navigationLabels, width = 20, font = fontSize, textvariable = self.productFlavorName)
         productFlavor_entry     .grid(column = 2, row = 3, sticky = W)
 
-        crudeImage = Image.open("logo.png")
-        crudeImage = crudeImage.resize((300,150), Image.ANTIALIAS)
 
-        self.img = ImageTk.PhotoImage(crudeImage)
-        canvas = Label(navigationLabels, image = self.img)
-        canvas.grid(column = 3,  row = 1, rowspan = 3)
+
+
 
         # switch button frames
         self.curState = StringVar()
@@ -75,8 +74,12 @@ class MW:
         financeButton       = ttk.Button(buttonFrame, text = "Finance", command = self.financeOnClick)
         financeButton       .grid(column = 5, row = 1, sticky = W)
 
+        imageButton         = ttk.Button(buttonFrame, text = "Image", command = self.imageOnClick)
+        imageButton         .grid(column = 6, row = 1, sticky = W)
+
         createButton        = ttk.Button(buttonFrame, text = "Create", command = self.createOnClick)
-        createButton        .grid(column = 6, row = 1, padx = (15,5), sticky = W)
+        createButton        .grid(column = 7, row = 1, padx = (15,5), sticky = W)
+
 
         #Displaying marketing section
         self.marketing  = Marketing(self.mainframe)
@@ -91,7 +94,8 @@ class MW:
         self.quality = Quality(self.mainframe)
         #displaying finance window
         self.finance = Finance(self.mainframe)
-
+        #displaying image icon
+        self.image   = Img(self.mainframe)
 
 
         #retrieve button
@@ -111,7 +115,7 @@ class MW:
         logoutButton    .grid_configure(padx = 50, pady = 10)
 
         # padding every element in the frames
-        for child in navigationLabels.winfo_children(): 
+        for child in self.navigationLabels.winfo_children(): 
             child.grid_configure(padx = 5, pady = 5)
 
         #Styling all the labels and buttons.
@@ -131,6 +135,14 @@ class MW:
         pStyleName  = self.productStyleName.get()
         pFlavorName = self.productFlavorName.get()
         data = []
+        
+        crudeImage = self.db.selectImg(brand, pStyleName, pFlavorName)
+        if not crudeImage:
+            crudeImage = Image.open("logo.png")
+            crudeImage = crudeImage.resize((300,150), Image.ANTIALIAS)
+        self.setImage(crudeImage)
+
+        self.setImage(crudeImage)
         if (self.curState.get() == "marketing"):
             data = self.db.selectMarketing(brand, pStyleName, pFlavorName)
             self.marketing.setValues(data)
@@ -186,6 +198,8 @@ class MW:
             values = map(lambda x: x.get(), self.finance.financeValues)
             self.db.insertIntoFinance(brand, pStyleName, pFlavorName, values)
 
+        if (self.curState.get() == "image"):
+            self.db.insertPhoto(brand, pStyleName, pFlavorName, self.photo_bytes)
 
     def marketingOnClick(self):
         self.curState    .set("marketing")
@@ -194,7 +208,9 @@ class MW:
         self.packaging   .forget()
         self.quality     .forget()
         self.finance     .forget()
+        self.image       .forget()
         self.marketing   .draw()
+
 
     def supplyOnClick(self):
        self.curState     .set("supply")
@@ -202,6 +218,7 @@ class MW:
        self.packaging    .forget()
        self.quality      .forget()
        self.finance      .forget()
+       self.image       .forget()
        self.supply       .draw()
 
     def salesOnClick(self):
@@ -211,6 +228,7 @@ class MW:
         self.packaging   .forget()
         self.quality     .forget()
         self.finance     .forget()
+        self.image       .forget()
         self.sales       .draw()
 
     def packagingOnClick(self):
@@ -220,6 +238,7 @@ class MW:
         self.sales       .forget()
         self.quality     .forget()
         self.finance     .forget()
+        self.image       .forget()
         self.packaging   .draw()
 
     def qualityOnClick(self):
@@ -229,6 +248,7 @@ class MW:
         self.sales       .forget()
         self.packaging   .forget()
         self.finance     .forget()
+        self.image       .forget()
         self.quality     .draw()
 
     def financeOnClick(self):
@@ -238,7 +258,29 @@ class MW:
         self.sales       .forget()
         self.packaging   .forget()
         self.quality     .forget()
+        self.image       .forget()
         self.finance     .draw()
+
+    def imageOnClick(self):
+        imageLocation = filedialog.askopenfilename(initialdir = "/",title = "Select file",
+                                                   filetypes = (("all files","*.*"),("jpeg files","*.jpg"),("png files", "*.png")))
+        crude = Image.open(imageLocation)
+        crude = crude.resize((300,150), Image.ANTIALIAS)
+        #saves current image as bytes
+        with open(imageLocation, 'rb') as photo_file:
+            self.photo_bytes = photo_file.read()
+
+        self.image.setImage(crude)
+        
+        self.curState    .set('image')
+        self.marketing   .forget()
+        self.supply      .forget()
+        self.sales       .forget()
+        self.packaging   .forget()
+        self.quality     .forget()
+        self.finance     .forget()
+        self.image       .show()
+
 
     def createOnClick(self):
         createPop= Toplevel(self.root)
@@ -259,7 +301,12 @@ class MW:
         brand       = self.bName.get()
         pStyleName  = self.productStyleName.get()
         pFlavorName = self.productFlavorName.get()
-        db.createObject(brand, pStyleName, pFlavorName)
+        self.db.createObject(brand, pStyleName, pFlavorName)
+
+    def setImage(self, img):
+        self.img = ImageTk.PhotoImage(img)
+        canvas = Label(self.navigationLabels, image = self.img)
+        canvas.grid(column = 4,  row = 1, rowspan = 3)
 
     def draw(self):
         self.mainframe.grid(column = 0, row = 0, sticky=(N, W, E, S))
