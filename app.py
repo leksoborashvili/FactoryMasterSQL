@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from loginwindow import Login
 from mainWindow import MW
 from auth import Authorization
@@ -16,9 +17,7 @@ class App:
             self.mw.draw()
         
     def failedLogin(self,errorMessage):
-        errorWindow = Toplevel(root)
-        errorLabel  = ttk.Label(errorWindow, text = errorMessage, font = "8")
-        errorLabel.grid(column = 0, row = 0)
+        messagebox.showwarning('Error', 'Login failed')
 
     def logout(self):
         self.mw.forget()

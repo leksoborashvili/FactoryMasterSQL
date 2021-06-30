@@ -10,7 +10,7 @@ class DB:
         database = 'DataBase1'
         username = 'Kpursell'
         password = 'F@ct0ry315'
-        driver= '{ODBC Driver 17 for SQL Server}'
+        driver= '{SQL Server}'
         with pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) as conn:
             self.con = conn
         #self.con = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\LeksoBorashvili\source\repos\test\test\masterData.accdb;')
@@ -24,18 +24,25 @@ class DB:
 
 
     def selectMarketing(self, brandName, productStyle, productFlavor):
-        self.cursor.execute("""SELECT Format, FoodServiceBulkPack, EachUPC,
-            EachWeight, EachUOM, QtyPerInner, InnerPackUPC, InnerWeight, InnerUOM, QtyPerCase, CaseUPC, CaseWeightLbs, CaseUOM,
-            QtyCasesperPallet, CaseGTIN, Description, Description2, FrontImage, RearImage, Layflat, Perishable,
-            IsMultiPack, IsVarietyPack, IsDisplayShipper, PalletUPC, PalletWeightLbs, PalletUOM, PalletTie, PalletHigh
-            FROM MasterDataTable 
-            WHERE BrandName = ? 
-            AND ProductStyle = ? 
-            AND ProductFlavor = ? """,
-        brandName, productStyle, productFlavor)
-        marketingData = self.cursor.fetchone()
-        return marketingData
-
+        try:
+            self.cursor.execute("""SELECT Format, FoodServiceBulkPack, EachUPC,
+                EachWeight, EachUOM, QtyPerInner, InnerPackUPC, InnerWeight, InnerUOM, QtyPerCase, CaseUPC, CaseWeightLbs, CaseUOM,
+                QtyCasesperPallet, CaseGTIN, Description, Description2, FrontImage, RearImage, Layflat, Perishable,
+                IsMultiPack, IsVarietyPack, IsDisplayShipper, PalletUPC, PalletWeightLbs, PalletUOM, PalletTie, PalletHigh
+                FROM MasterDataTable 
+                WHERE BrandName = ? 
+                AND ProductStyle = ? 
+                AND ProductFlavor = ? """,
+            brandName, productStyle, productFlavor)
+            marketingData = self.cursor.fetchone()
+            return marketingData
+        except Exception as ex:
+            print(type(ex))
+            print(ex.args)
+            data = []
+            for i in range (0,100):
+                data.append("None")
+            return data
     
     def insertIntoMarketing(self, brandName, productStyle, productFlavor, values):
         conv_list = list(values)
@@ -56,15 +63,22 @@ class DB:
 
     
     def selectSupplyPlanning(self, brandName, productStyle, productFlavor):
-        self.cursor.execute("""SELECT  
-            MinOrderCases, Warehouse, PalletPickPriority, FreightClass, NMFC, Manufacturer
-            FROM MasterDataTable
-            WHERE BrandName = ?
-            AND ProductStyle = ? 
-            AND ProductFlavor = ? """, 
-        brandName, productStyle, productFlavor)
-        return self.cursor.fetchone()
-
+        try:
+            self.cursor.execute("""SELECT  
+                MinOrderCases, Warehouse, PalletPickPriority, FreightClass, NMFC, Manufacturer
+                FROM MasterDataTable
+                WHERE BrandName = ?
+                AND ProductStyle = ? 
+                AND ProductFlavor = ? """, 
+            brandName, productStyle, productFlavor)
+            return self.cursor.fetchone()
+        except Exception as ex:
+            print(type(ex))
+            print(ex.args)
+            data = []
+            for i in range (0,100):
+                data.append("None")
+            return data
 
     def insertIntoSupplyPlanning(self, brandName, productStyle, productFlavor, values):
         conv_list = list(values)
@@ -80,15 +94,22 @@ class DB:
 
 
     def selectSales(self, brandName, productStyle, productFlavor):
-        self.cursor.execute("""SELECT 
-            DistributorDeliveredCaseCost, SRP, PlanogramDepth, PlanogramHeight, PlanogramWidth, VendorSKU
-            FROM MasterDataTable
-            WHERE BrandName = ?
-            AND ProductStyle = ? 
-            AND ProductFlavor = ? """, 
-        brandName, productStyle, productFlavor)
-        return self.cursor.fetchone()
-
+        try:
+            self.cursor.execute("""SELECT 
+                DistributorDeliveredCaseCost, SRP, PlanogramDepth, PlanogramHeight, PlanogramWidth, VendorSKU
+                FROM MasterDataTable
+                WHERE BrandName = ?
+                AND ProductStyle = ? 
+                AND ProductFlavor = ? """, 
+            brandName, productStyle, productFlavor)
+            return self.cursor.fetchone()
+        except Exception as ex:
+            print(type(ex))
+            print(ex.args)
+            data = []
+            for i in range (0,100):
+                data.append("None")
+            return data
 
     def insertIntoSales(self, brandName, productStyle, productFlavor, values):
         conv_list = list(values)
@@ -104,17 +125,24 @@ class DB:
 
 
     def selectPackaging(self, brandName, productStyle, productFlavor):
-        self.cursor.execute("""SELECT 
-            EachHeight, EachWidth, EachDepth, InnerHeight, InnerWidth, InnerDepth,
-            CaseHeight, CaseWidth, CaseDepth, CaseCube, PalletHeight, PalletWidth, PalletDepth, 
-            PackagingDieline, PackagingSpec, CaseDieline, PalletConfig
-            FROM MasterDataTable
-            WHERE BrandName = ?
-            AND ProductStyle = ? 
-            AND ProductFlavor = ? """, 
-        brandName, productStyle, productFlavor)
-        return self.cursor.fetchone()
-
+        try:
+            self.cursor.execute("""SELECT 
+                EachHeight, EachWidth, EachDepth, InnerHeight, InnerWidth, InnerDepth,
+                CaseHeight, CaseWidth, CaseDepth, CaseCube, PalletHeight, PalletWidth, PalletDepth, 
+                PackagingDieline, PackagingSpec, CaseDieline, PalletConfig
+                FROM MasterDataTable
+                WHERE BrandName = ?
+                AND ProductStyle = ? 
+                AND ProductFlavor = ? """, 
+            brandName, productStyle, productFlavor)
+            return self.cursor.fetchone()
+        except Exception as ex:
+            print(type(ex))
+            print(ex.args)
+            data = []
+            for i in range (0,100):
+                data.append("None")
+            return data
 
     def insertIntoPackaging(self, brandName, productStyle, productFlavor, values):
         conv_list = list(values)
@@ -132,18 +160,25 @@ class DB:
 
 
     def selectQuality(self, brandName, productStyle, productFlavor):
-        self.cursor.execute("""SELECT 
-            CountryOfOriginName, CodeDateExample, CodeDateFormula, CodeDateType, CodeDateStamp,
-            ShelfLifeDaysGuarantee, ShelfLifeDaysAtProduction, ShippingCondition, StorageCondition,
-            ShippingTemperatureRangeHigh, ShippingTemperatureRangeLow, StorageTemperatureRangeHigh, 
-            StorageTemperatureRangeLow, NFP, Ingredients
-            FROM MasterDataTable
-            WHERE BrandName = ?
-            AND ProductStyle = ? 
-            AND ProductFlavor = ? """, 
-        brandName, productStyle, productFlavor)
-        return self.cursor.fetchone()
-
+        try:    
+            self.cursor.execute("""SELECT 
+                CountryOfOriginName, CodeDateExample, CodeDateFormula, CodeDateType, CodeDateStamp,
+                ShelfLifeDaysGuarantee, ShelfLifeDaysAtProduction, ShippingCondition, StorageCondition,
+                ShippingTemperatureRangeHigh, ShippingTemperatureRangeLow, StorageTemperatureRangeHigh, 
+                StorageTemperatureRangeLow, NFP, Ingredients
+                FROM MasterDataTable
+                WHERE BrandName = ?
+                AND ProductStyle = ? 
+                AND ProductFlavor = ? """, 
+            brandName, productStyle, productFlavor)
+            return self.cursor.fetchone()
+        except Exception as ex:
+            print(type(ex))
+            print(ex.args)
+            data = []
+            for i in range (0,100):
+                data.append("None")
+            return data
 
     def insertIntoQuality(self, brandName, productStyle, productFlavor, values):
         conv_list = list(values)
@@ -161,15 +196,22 @@ class DB:
 
 
     def selectFinance(self, brandName, productStyle, productFlavor):
-        self.cursor.execute("""SELECT 
-            UnitCost, CaseCost, InternalItemNumber
-            FROM MasterDataTable
-            WHERE BrandName = ?
-            AND ProductStyle = ? 
-            AND ProductFlavor = ? """, 
-        brandName, productStyle, productFlavor)
-        return self.cursor.fetchone()
-
+        try:
+            self.cursor.execute("""SELECT 
+                UnitCost, CaseCost, InternalItemNumber
+                FROM MasterDataTable
+                WHERE BrandName = ?
+                AND ProductStyle = ? 
+                AND ProductFlavor = ? """, 
+            brandName, productStyle, productFlavor)
+            return self.cursor.fetchone()
+        except Exception as ex:
+            print(type(ex))
+            print(ex.args)
+            data = []
+            for i in range (0,100):
+                data.append("None")
+            return data
 
     def insertIntoFinance(self, brandName, productStyle, productFlavor, values):
         conv_list = list(values)
@@ -183,20 +225,27 @@ class DB:
         self.con.commit()
 
     def selectImg(self, brandName, productStyle, productFlavor):
-        self.cursor.execute("""SELECT
-            Icon FROM MasterDataTable 
-            WHERE BrandName = ?
-            AND ProductStyle = ?
-            AND ProductFlavor = ? """,
-        brandName, productStyle, productFlavor)
+        try:
+            self.cursor.execute("""SELECT
+                Icon FROM MasterDataTable 
+                WHERE BrandName = ?
+                AND ProductStyle = ?
+                AND ProductFlavor = ? """,
+            brandName, productStyle, productFlavor)
 
-        data  = self.cursor.fetchone()[0]
-        crudeImg = None
-        if data:
-            crudeImg = Image.open(io.BytesIO(data))
-            crudeImg = crudeImg.resize((300,150), Image.ANTIALIAS)
+            data  = self.cursor.fetchone()[0]
+            crudeImg = None
+            if data:
+                crudeImg = Image.open(io.BytesIO(data))
+                crudeImg = crudeImg.resize((300,150), Image.ANTIALIAS)
+            return crudeImg
+        except Exception as ex:
+            print(type(ex))
+            print(ex.args)
+            return None
 
-        return crudeImg
+
+
 
     def insertPhoto(self, brandName, productStyle, productFlavor, img_bytes):
         self.cursor.execute("""UPDATE MasterDataTable SET Icon = ? 
@@ -205,6 +254,7 @@ class DB:
             AND (ProductFlavor = ?))""",
            img_bytes, brandName, productStyle, productFlavor)
         self.con.commit()
+
     def __del__(self):
         self.con.close()
         

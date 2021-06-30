@@ -54,12 +54,15 @@ class Img:
 
 
 root = Tk()
-img = Img()
 root.geometry("300x200")
-button  = Button(root, text = "SELECT",
-				command = lambda: img.selectImage(),
-				border = 0)
-button  .grid(column = 0, row = 1)
+
+listbox = Listbox(root, height = 10, width = 15, bg = 'grey', activestyle = 'dotbox')
+
+listbox.insert(1, "N1")
+listbox.insert(2, "N2")
+listbox.insert(3, "N3")
+
+listbox.grid(column = 0, row = 0)
 
 
 root.mainloop()

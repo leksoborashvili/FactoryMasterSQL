@@ -9,7 +9,8 @@ class Login:
 
         ttk.Label(self.login, text = "Username", font = "10", justify = "center").grid(column = 0, row = 0)
         self.userName = StringVar()
-        ttk.Entry(self.login, textvariable = self.userName, width = "30", font = "10").grid(column = 0, row = 1)
+        userLabel = ttk.Entry(self.login, textvariable = self.userName, width = "30", font = "10")
+        userLabel.grid(column = 0, row = 1)
 
         style = ttk.Style()
         style.configure("TEntry", background = "green")
@@ -31,6 +32,7 @@ class Login:
         button  = Button(self.login, image = self.img, command = signIn, border = 0)
         button  .grid(column = 0, row = 4)
 
+        userLabel.bind('<Return>', signIn)
         passLabel.bind('<Return>', signIn)
 
         for child in self.login.winfo_children():

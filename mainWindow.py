@@ -19,6 +19,7 @@ class MW:
         self.db = DB()
         self.mainframe = ttk.Frame(root)
 
+
         self.navigationLabels = ttk.Frame(self.mainframe, padding="3 3 12 12")
         self.navigationLabels.grid(column = 0, row = 0, sticky=(N, W, E, S))
 
@@ -45,45 +46,90 @@ class MW:
         productFlavor_entry     = ttk.Entry(self.navigationLabels, width = 20, font = fontSize, textvariable = self.productFlavorName)
         productFlavor_entry     .grid(column = 2, row = 3, sticky = W)
 
+        crudeImage = Image.open("logo.png")
+        crudeImage = crudeImage.resize((300,150), Image.ANTIALIAS)
+        self.setImage(crudeImage)
 
 
 
+        
 
-        # switch button frames
-        self.curState = StringVar()
-        self.curState.set("marketing")
+        #switch button styles
+        switchStyle = ttk.Style()
+        switchStyle.configure('Switch.TButton', foreground = "black", background = "red")
 
         buttonFrame         = ttk.Frame(self.mainframe)
         buttonFrame         .grid(column = 0, row = 1, sticky=(N, W, E, S))
 
-        marketingButton     = ttk.Button(buttonFrame, text = "Marketing",  command = self.marketingOnClick)
-        marketingButton     .grid(column = 0, row = 1, sticky = W)
+        # switch button frames
+        self.curState = StringVar()
+        self.curState.set("marketing")
+        self.marketingButton     = Checkbutton(buttonFrame, text = "Marketing",
+                                        command = self.marketingOnClick,
+                                        indicatoron = 0,
+                                        width = 8,
+                                        font = 7,
+                                        relief = RAISED
+                                        )
+        self.marketingButton     .grid(column = 0, row = 1, sticky = W)
 
-        supplyButton        = ttk.Button(buttonFrame, text = "Supply", command = self.supplyOnClick)
-        supplyButton        .grid(column = 1, row = 1, sticky = W)
+        self.supplyButton        = Checkbutton(buttonFrame, text = "Supply",
+                                        command = self.supplyOnClick,
+                                        indicatoron = 0,
+                                        width = 8,
+                                        font = 7
+                                        )
+        self.supplyButton        .grid(column = 1, row = 1, sticky = W)
 
-        salesButton         = ttk.Button(buttonFrame, text = "Sales", command = self.salesOnClick)
-        salesButton         .grid(column = 2, row = 1, sticky = W)
+        self.salesButton         = Checkbutton(buttonFrame, text = "Sales",
+                                        command = self.salesOnClick,
+                                        indicatoron = 0,
+                                        width = 8,
+                                        font = 7
+                                        )
+        self.salesButton         .grid(column = 2, row = 1, sticky = W)
 
-        packagingButton     = ttk.Button(buttonFrame, text = "Packaging", command = self.packagingOnClick)
-        packagingButton     .grid(column = 3, row = 1, sticky = W)
+        self.packagingButton     = Checkbutton(buttonFrame, text = "Packaging",
+                                        command = self.packagingOnClick,
+                                        indicatoron = 0,
+                                        width = 8,
+                                        font = 7
+                                        )
+        self.packagingButton     .grid(column = 3, row = 1, sticky = W)
 
-        qualityButton       = ttk.Button(buttonFrame, text = "Quality", command = self.qualityOnClick)
-        qualityButton       .grid(column = 4, row = 1, sticky = W)
+        self.qualityButton       = Checkbutton(buttonFrame, text = "Quality",
+                                        command = self.qualityOnClick,
+                                        indicatoron = 0,
+                                        width = 8,
+                                        font = 7
+                                        )
+        self.qualityButton       .grid(column = 4, row = 1, sticky = W)
 
-        financeButton       = ttk.Button(buttonFrame, text = "Finance", command = self.financeOnClick)
-        financeButton       .grid(column = 5, row = 1, sticky = W)
+        self.financeButton       = Checkbutton(buttonFrame, text = "Finance",
+                                        command = self.financeOnClick,
+                                        indicatoron = 0,
+                                        width = 8,
+                                        font = 7
+                                        )
+        self.financeButton       .grid(column = 5, row = 1, sticky = W)
 
-        imageButton         = ttk.Button(buttonFrame, text = "Image", command = self.imageOnClick)
-        imageButton         .grid(column = 6, row = 1, sticky = W)
+        self.imageButton         = Checkbutton(buttonFrame, text = "Image",
+                                        command = self.imageOnClick,
+                                        indicatoron = 0,
+                                        width = 8,
+                                        font = 7
+                                        )
+        self.imageButton         .grid(column = 6, row = 1, sticky = W)
 
         createButton        = ttk.Button(buttonFrame, text = "Create", command = self.createOnClick)
         createButton        .grid(column = 7, row = 1, padx = (15,5), sticky = W)
 
+        
 
         #Displaying marketing section
         self.marketing  = Marketing(self.mainframe)
         self.marketing.draw()
+        self.marketingButton.select()
         #displaying supply planning window
         self.supply =  Supply(self.mainframe)
         #displaying sales window
@@ -139,10 +185,9 @@ class MW:
         crudeImage = self.db.selectImg(brand, pStyleName, pFlavorName)
         if not crudeImage:
             crudeImage = Image.open("logo.png")
-            crudeImage = crudeImage.resize((300,150), Image.ANTIALIAS)
+        crudeImage = crudeImage.resize((300,150), Image.ANTIALIAS)
         self.setImage(crudeImage)
 
-        self.setImage(crudeImage)
         if (self.curState.get() == "marketing"):
             data = self.db.selectMarketing(brand, pStyleName, pFlavorName)
             self.marketing.setValues(data)
@@ -199,9 +244,16 @@ class MW:
             self.db.insertIntoFinance(brand, pStyleName, pFlavorName, values)
 
         if (self.curState.get() == "image"):
-            self.db.insertPhoto(brand, pStyleName, pFlavorName, self.photo_bytes)
+            self.db.insertPhoto(brand, pStyleName, pFlavorName, self.image.photo_bytes)
 
     def marketingOnClick(self):
+        self.marketingButton.select()
+        self.supplyButton.deselect()
+        self.salesButton.deselect()
+        self.packagingButton.deselect()
+        self.qualityButton.deselect()
+        self.financeButton.deselect()
+        self.imageButton.deselect()
         self.curState    .set("marketing")
         self.supply      .forget()
         self.sales       .forget()
@@ -213,15 +265,29 @@ class MW:
 
 
     def supplyOnClick(self):
-       self.curState     .set("supply")
-       self.sales        .forget()
-       self.packaging    .forget()
-       self.quality      .forget()
-       self.finance      .forget()
-       self.image       .forget()
-       self.supply       .draw()
+        self.marketingButton.deselect()
+        self.supplyButton.select()
+        self.salesButton.deselect()
+        self.packagingButton.deselect()
+        self.qualityButton.deselect()
+        self.financeButton.deselect()
+        self.imageButton.deselect()
+        self.curState     .set("supply")
+        self.sales        .forget()
+        self.packaging    .forget()
+        self.quality      .forget()
+        self.finance      .forget()
+        self.image       .forget()
+        self.supply       .draw()
 
     def salesOnClick(self):
+        self.marketingButton.deselect()
+        self.supplyButton.deselect()
+        self.salesButton.select()
+        self.packagingButton.deselect()
+        self.qualityButton.deselect()
+        self.financeButton.deselect()
+        self.imageButton.deselect()
         self.curState    .set("sales")
         self.marketing   .forget()
         self.supply      .forget()
@@ -232,6 +298,13 @@ class MW:
         self.sales       .draw()
 
     def packagingOnClick(self):
+        self.marketingButton.deselect()
+        self.supplyButton.deselect()
+        self.salesButton.deselect()
+        self.packagingButton.select()
+        self.qualityButton.deselect()
+        self.financeButton.deselect()
+        self.imageButton.deselect()
         self.curState    .set("packaging")
         self.marketing   .forget()
         self.supply      .forget()
@@ -242,6 +315,13 @@ class MW:
         self.packaging   .draw()
 
     def qualityOnClick(self):
+        self.marketingButton.deselect()
+        self.supplyButton.deselect()
+        self.salesButton.deselect()
+        self.packagingButton.deselect()
+        self.qualityButton.select()
+        self.financeButton.deselect()
+        self.imageButton.deselect()
         self.curState    .set("quality")
         self.marketing   .forget()
         self.supply      .forget()
@@ -252,6 +332,13 @@ class MW:
         self.quality     .draw()
 
     def financeOnClick(self):
+        self.marketingButton.deselect()
+        self.supplyButton.deselect()
+        self.salesButton.deselect()
+        self.packagingButton.deselect()
+        self.qualityButton.deselect()
+        self.financeButton.select()
+        self.imageButton.deselect()
         self.curState    .set('finance')
         self.marketing   .forget()
         self.supply      .forget()
@@ -262,15 +349,7 @@ class MW:
         self.finance     .draw()
 
     def imageOnClick(self):
-        imageLocation = filedialog.askopenfilename(initialdir = "/",title = "Select file",
-                                                   filetypes = (("all files","*.*"),("jpeg files","*.jpg"),("png files", "*.png")))
-        crude = Image.open(imageLocation)
-        crude = crude.resize((300,150), Image.ANTIALIAS)
-        #saves current image as bytes
-        with open(imageLocation, 'rb') as photo_file:
-            self.photo_bytes = photo_file.read()
-
-        self.image.setImage(crude)
+        self.imageButton.deselect()
         
         self.curState    .set('image')
         self.marketing   .forget()
@@ -280,6 +359,13 @@ class MW:
         self.quality     .forget()
         self.finance     .forget()
         self.image       .show()
+        self.imageButton.select()
+        self.marketingButton.deselect()
+        self.supplyButton.deselect()
+        self.salesButton.deselect()
+        self.packagingButton.deselect()
+        self.qualityButton.deselect()
+        self.financeButton.deselect()
 
 
     def createOnClick(self):
