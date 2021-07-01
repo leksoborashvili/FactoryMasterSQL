@@ -255,6 +255,18 @@ class DB:
            img_bytes, brandName, productStyle, productFlavor)
         self.con.commit()
 
+    def insertUser(self, email, role):
+        self.cursor.execute("""insert into [dbo].[users] ([email], [role]) 
+            select * from ( 
+                values (?,?) -- sample value 
+            ) as s([email], [role]) 
+            where not exists ( 
+                select * from [dbo].[users] t with (updlock) 
+                where s.[email] = t.[email] and s.[role] = t.[role] 
+            )""", email, role)
+        self.con.commit()
+
+
     def __del__(self):
         self.con.close()
         

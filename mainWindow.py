@@ -11,14 +11,17 @@ from quality import Quality
 from finance import Finance
 from functools import partial
 from image import Img
+from profile import Profile
+import requests
+import json
 
 class MW:
-    def __init__(self, root, logout):
+    def __init__(self, root, logout, token):
 
+        self.token = token
         self.root = root
         self.db = DB()
         self.mainframe = ttk.Frame(root)
-
 
         self.navigationLabels = ttk.Frame(self.mainframe, padding="3 3 12 12")
         self.navigationLabels.grid(column = 0, row = 0, sticky=(N, W, E, S))
@@ -50,9 +53,11 @@ class MW:
         crudeImage = crudeImage.resize((300,150), Image.ANTIALIAS)
         self.setImage(crudeImage)
 
-
+        #profile section code
+        self.drawProfile(logout)
 
         
+        #logoutButton    .grid_configure(padx = 50, pady = 10)
 
         #switch button styles
         switchStyle = ttk.Style()
@@ -156,9 +161,6 @@ class MW:
         updateButton    .grid(column = 2, row = 0, sticky = W)
         retrieveButton  .grid_configure(padx = 20, pady = 10)
 
-        logoutButton    = ttk.Button(commandButtonframe, text = "Logout", command = logout)
-        logoutButton    .grid(column = 4, row = 0, sticky = E)
-        logoutButton    .grid_configure(padx = 50, pady = 10)
 
         # padding every element in the frames
         for child in self.navigationLabels.winfo_children(): 
@@ -247,64 +249,31 @@ class MW:
             self.db.insertPhoto(brand, pStyleName, pFlavorName, self.image.photo_bytes)
 
     def marketingOnClick(self):
+        self.deselectAll()
         self.marketingButton.select()
-        self.supplyButton.deselect()
-        self.salesButton.deselect()
-        self.packagingButton.deselect()
-        self.qualityButton.deselect()
-        self.financeButton.deselect()
-        self.imageButton.deselect()
+        
         self.curState    .set("marketing")
-        self.supply      .forget()
-        self.sales       .forget()
-        self.packaging   .forget()
-        self.quality     .forget()
-        self.finance     .forget()
-        self.image       .forget()
+        self.forgetAll()
         self.marketing   .draw()
 
 
     def supplyOnClick(self):
-        self.marketingButton.deselect()
+        self.deselectAll()
         self.supplyButton.select()
-        self.salesButton.deselect()
-        self.packagingButton.deselect()
-        self.qualityButton.deselect()
-        self.financeButton.deselect()
-        self.imageButton.deselect()
         self.curState     .set("supply")
-        self.sales        .forget()
-        self.packaging    .forget()
-        self.quality      .forget()
-        self.finance      .forget()
-        self.image       .forget()
+        self.forgetAll()
         self.supply       .draw()
 
     def salesOnClick(self):
-        self.marketingButton.deselect()
-        self.supplyButton.deselect()
+        self.deselectAll()
         self.salesButton.select()
-        self.packagingButton.deselect()
-        self.qualityButton.deselect()
-        self.financeButton.deselect()
-        self.imageButton.deselect()
         self.curState    .set("sales")
-        self.marketing   .forget()
-        self.supply      .forget()
-        self.packaging   .forget()
-        self.quality     .forget()
-        self.finance     .forget()
-        self.image       .forget()
+        self.forgetAll()
         self.sales       .draw()
 
     def packagingOnClick(self):
-        self.marketingButton.deselect()
-        self.supplyButton.deselect()
-        self.salesButton.deselect()
+        self.deselectAll()
         self.packagingButton.select()
-        self.qualityButton.deselect()
-        self.financeButton.deselect()
-        self.imageButton.deselect()
         self.curState    .set("packaging")
         self.marketing   .forget()
         self.supply      .forget()
@@ -315,51 +284,30 @@ class MW:
         self.packaging   .draw()
 
     def qualityOnClick(self):
-        self.marketingButton.deselect()
-        self.supplyButton.deselect()
-        self.salesButton.deselect()
-        self.packagingButton.deselect()
+        self.deselectAll()
         self.qualityButton.select()
-        self.financeButton.deselect()
-        self.imageButton.deselect()
         self.curState    .set("quality")
-        self.marketing   .forget()
-        self.supply      .forget()
-        self.sales       .forget()
-        self.packaging   .forget()
-        self.finance     .forget()
-        self.image       .forget()
+        self.forgetAll()
         self.quality     .draw()
 
     def financeOnClick(self):
-        self.marketingButton.deselect()
-        self.supplyButton.deselect()
-        self.salesButton.deselect()
-        self.packagingButton.deselect()
-        self.qualityButton.deselect()
+        self.deselectAll()
         self.financeButton.select()
-        self.imageButton.deselect()
         self.curState    .set('finance')
-        self.marketing   .forget()
-        self.supply      .forget()
-        self.sales       .forget()
-        self.packaging   .forget()
-        self.quality     .forget()
-        self.image       .forget()
+        self.forgetAll()
         self.finance     .draw()
 
     def imageOnClick(self):
-        self.imageButton.deselect()
-        
+        self.deselectAll()
         self.curState    .set('image')
-        self.marketing   .forget()
-        self.supply      .forget()
-        self.sales       .forget()
-        self.packaging   .forget()
-        self.quality     .forget()
-        self.finance     .forget()
+        self.forgetAll()
         self.image       .show()
+
         self.imageButton.select()
+        
+
+    def deselectAll(self):
+        self.imageButton.deselect()
         self.marketingButton.deselect()
         self.supplyButton.deselect()
         self.salesButton.deselect()
@@ -367,6 +315,14 @@ class MW:
         self.qualityButton.deselect()
         self.financeButton.deselect()
 
+    def forgetAll(self):
+        self.marketing   .forget()
+        self.supply      .forget()
+        self.sales       .forget()
+        self.packaging   .forget()
+        self.quality     .forget()
+        self.finance     .forget()
+        self.image       .forget()
 
     def createOnClick(self):
         createPop= Toplevel(self.root)
@@ -393,6 +349,40 @@ class MW:
         self.img = ImageTk.PhotoImage(img)
         canvas = Label(self.navigationLabels, image = self.img)
         canvas.grid(column = 4,  row = 1, rowspan = 3)
+
+    def drawProfile(self, logout):
+        graph_data = requests.get(
+                "https://graph.microsoft.com/v1.0/me/",
+                headers={'Authorization': 'Bearer ' + self.token}).json()
+
+        profileframe = ttk.Frame(self.navigationLabels, style = 'profileframe.TFrame')
+        profileframe.grid(column = 7, row = 1, rowspan = 3, sticky = N)
+        
+        prof = Image.open("profile.jpg")
+        prof = prof.resize((75,75), Image.ANTIALIAS)
+        self.profilePic = ImageTk.PhotoImage(prof)
+        canvas = Button(profileframe, image = self.profilePic,
+                       pady = 0, border = 1, relief = RAISED,
+                       command = lambda: self.onProfileClick(graph_data)
+                       )
+        canvas.grid(column = 0,  row = 0)
+
+        
+        username = Label(profileframe, text = graph_data["displayName"], font = 6 )
+        username.grid(column = 0, row = 1)
+
+        logoutButton    = ttk.Button(profileframe, text = "Logout", command = logout)
+        logoutButton    .grid(column = 0, row = 2)
+
+
+    def onProfileClick(self, graph_data):
+        self.profile = Profile(self.root, graph_data, self.leaveProfileWindow)
+        self.forget()
+        self.profile.draw()
+
+    def leaveProfileWindow(self):
+        self.profile.forget()
+        self.draw()
 
     def draw(self):
         self.mainframe.grid(column = 0, row = 0, sticky=(N, W, E, S))

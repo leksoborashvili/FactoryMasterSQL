@@ -37,10 +37,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="packaging.py" />
+    <Compile Include="profile.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="quality.py" />
     <Compile Include="sales.py" />
     <Compile Include="supply.py" />
     <Compile Include="mainwindow.py" />
+    <Compile Include="userdbconnect.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="logo.png" />

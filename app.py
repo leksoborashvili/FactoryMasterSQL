@@ -4,22 +4,31 @@ from tkinter import messagebox
 from loginwindow import Login
 from mainWindow import MW
 from auth import Authorization
-
+import requests
+import json
 
 
 class App:
 
     def signIn(self, event = None):
-        if(auth.authorize(login.userName.get(), login.passWord.get(), self.failedLogin)):
+        self.user_token = auth.authorize(login.userName.get(), login.passWord.get(), self.failedLogin)
+        if(self.user_token):
             login.forget()
             login.passWord.set("")
-            self.mw = MW(root, app.logout)
+            self.mw = MW(root, app.logout, self.user_token)
             self.mw.draw()
+
+            graph_data = requests.get(
+                "https://graph.microsoft.com/v1.0/me/",
+                headers={'Authorization': 'Bearer ' + self.user_token}).json()
+
+            self.mw.db.insertUser(graph_data['mail'], "regular")
         
     def failedLogin(self,errorMessage):
-        messagebox.showwarning('Error', 'Login failed')
+        messagebox.showwarning('Error', errorMessage)
 
     def logout(self):
+        user_token = None
         self.mw.forget()
         login.draw()
         auth.logout()
@@ -27,7 +36,7 @@ class App:
 app = App()
 auth = Authorization()
 
-root = Tk();
+root = Tk()
 root.title('Database Manager')
 
 login = Login(root,app.signIn)

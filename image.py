@@ -7,7 +7,7 @@ from PIL import  Image, ImageTk
 
 class Img(object):
     def __init__(self, root):
-        self.imageframe = ttk.Frame(root, padding = (30,3,30,15))
+        self.imageframe = ttk.Frame(root, padding = (30,10,30,15))
         imageButton = ttk.Button(self.imageframe, text = "Select Image", command = self.onClickHandle)
         imageButton.grid(column = 1, row = 1)
 

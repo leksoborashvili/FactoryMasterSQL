@@ -42,7 +42,7 @@ class Authorization():
                 self.config["endpoint"],
                 headers={'Authorization': 'Bearer ' + result['access_token']},).json()
             print("Graph API call result: %s" % json.dumps(graph_data, indent=2))
-            return "access_token"
+            return result["access_token"]
         else:
             print(result.get("error"))
             failedLogin(result.get("error_description"))
