@@ -24,9 +24,6 @@ class App:
         login.draw()
         auth.logout()
 
-
-
-
 app = App()
 auth = Authorization()
 
