@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ba8a834f-4024-49d0-8f6c-d6cc4639313a</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>databaseConnector.py</StartupFile>
+    <StartupFile>util\databaseConnector.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,35 +21,43 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="auth.py">
+    <Compile Include="src\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="image.py">
+    <Compile Include="util\auth.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="databaseConnector.py" />
-    <Compile Include="finance.py" />
-    <Compile Include="loginwindow.py">
+    <Compile Include="util\image.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="marketing.py" />
-    <Compile Include="app.py">
+    <Compile Include="util\databaseConnector.py" />
+    <Compile Include="util\finance.py" />
+    <Compile Include="src\loginwindow.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="packaging.py" />
-    <Compile Include="profile.py">
+    <Compile Include="util\marketing.py" />
+    <Compile Include="src\app.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="quality.py" />
-    <Compile Include="sales.py" />
-    <Compile Include="supply.py" />
-    <Compile Include="mainwindow.py" />
-    <Compile Include="userdbconnect.py">
+    <Compile Include="util\packaging.py" />
+    <Compile Include="src\profile.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="util\quality.py" />
+    <Compile Include="util\sales.py" />
+    <Compile Include="util\supply.py" />
+    <Compile Include="src\mainwindow.py" />
+    <Compile Include="util\__init__.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="logo.png" />
+    <Content Include="media\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="media\" />
+    <Folder Include="src\" />
+    <Folder Include="util\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
