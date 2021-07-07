@@ -7,11 +7,19 @@ class Profile:
         self.root = root
         self.profileframe = ttk.Frame(self.root, padding = "3 3 12 12")
         self.db = db
+        self.data = data
         welcometext = data["displayName"] + "'s profile"
         helloLabel = Label(self.profileframe, text = welcometext, font = 5)
         helloLabel.grid(column = 0, row = 0)
 
+        if (self.db.getUserByEmail(data['mail'])[1] == "ADMIN"):
+           self.userView()
+        
 
+        goBackButton = ttk.Button(self.profileframe, text = "Go Back", command = goBack)
+        goBackButton.grid(column = 0, row = 2)
+
+    def userView(self):
         self.listbox = ttk.Treeview(self.profileframe, columns=('user', 'access'),
                                    show = 'headings', padding = "5 5 5 5",
                                    selectmode = 'browse')
@@ -26,10 +34,11 @@ class Profile:
         
         self.listbox.grid(column = 0, row = 1)
         self.listbox.bind("<Double-1>", self.onDoubleClick)
-        goBackButton = ttk.Button(self.profileframe, text = "Go Back", command = goBack)
-        goBackButton.grid(column = 0, row = 2)
 
     def onDoubleClick(self, event):
+        if(self.db.getUserByEmail(self.data['mail'])[1] != 'ADMIN'):
+           messagebox.showwarning('Unauthorized Access', 'You do not have right to do this operation!')
+           return
 
         item = self.listbox.selection()[0]
         
@@ -52,6 +61,7 @@ class Profile:
         comboSubmit = ttk.Button(userWindow, text = "Submit", command = lambda: self.submitComboBox(chosen,popWindow))
         comboSubmit.grid(column = 0, row = 2)
         #self.listbox.item(item, values =(self.listbox.item(item)["values"][0], "REGULAR"))
+
 
 
     def submitComboBox(self, selected, window):

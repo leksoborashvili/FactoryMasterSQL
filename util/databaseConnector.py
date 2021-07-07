@@ -13,9 +13,9 @@ class DB:
         driver= '{SQL Server}'
         with pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) as conn:
             self.con = conn
+            
         #self.con = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\LeksoBorashvili\source\repos\test\test\masterData.accdb;')
         self.cursor = self.con.cursor()
-
 
     def createObject(self, brandName, productStyle, productFlavor):
         self.cursor.execute("""INSERT INTO MasterDataTable (BrandName, ProductStyle, ProductFlavor)
@@ -283,9 +283,12 @@ class DB:
         return self.cursor.fetchone()
 
     def updateUserRole(self, email, role):
-        self.cursor.execute("""UPDATE [dbo].[users] SET role = ? WHERE email = ?""", role, email)
-        self.cursor.commit()
-
+        try:
+            print(role, email)
+            self.cursor.execute("""UPDATE [dbo].[users] SET role = ? WHERE email = ?""", role, email)
+            self.cursor.commit()
+        except Exception as ex:
+            print(ex)
 
     def __del__(self):
         self.con.close()

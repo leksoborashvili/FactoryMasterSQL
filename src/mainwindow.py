@@ -22,8 +22,24 @@ class MW:
 
         self.token = token
         self.root = root
+        #self.root.geometry('400x500')
         self.db = DB()
-        self.mainframe = ttk.Frame(root)
+        self.firstframe = Frame(root)
+        self.firstframe.pack(fill = BOTH, expand = 1)
+
+        mainCanvas = Canvas(self.firstframe, width = 880, height = (root.winfo_screenheight()*8/10))
+        mainCanvas.pack(side = LEFT, fill=BOTH, expand=1)
+
+        mainScroll = ttk.Scrollbar(self.firstframe, orient = VERTICAL, command = mainCanvas.yview)
+        mainScroll.pack(side=RIGHT, fill=Y)
+
+        mainCanvas.configure(yscrollcommand = mainScroll.set)
+        mainCanvas.bind('<Configure>', lambda e: mainCanvas.configure(scrollregion = mainCanvas.bbox("all")))
+
+        self.mainframe = Frame(mainCanvas)
+        
+        mainCanvas.create_window((0,0), window = self.mainframe, anchor = "nw")
+
 
         self.navigationLabels = ttk.Frame(self.mainframe, padding="3 3 12 12")
         self.navigationLabels.grid(column = 0, row = 0, sticky=(N, W, E, S))
@@ -31,7 +47,7 @@ class MW:
         self.mainframe.columnconfigure(0, weight = 1)
         self.mainframe.rowconfigure(0, weight = 1)
 
-        # creating navigation top labels
+        #creating navigation top labels
         fontSize = "10"
         brandName               = ttk.Label(self.navigationLabels, text="BrandName")
         brandName               .grid(column=1,row=1, sticky = W)
@@ -222,32 +238,53 @@ class MW:
         brand       = self.bName.get()
         pStyleName  = self.productStyleName.get()
         pFlavorName = self.productFlavorName.get()
-
-        if (self.curState.get() == "marketing"):
+        privilege = self.db.getUserByEmail(self.user[0])[1]
+        if (self.curState.get() == "marketing" and (privilege == "MARKETING" or privilege == "ADMIN")):
+            if(not(privilege == "MARKETING" or privilege == "ADMIN")):
+                messagebox.showwarning('Error', "You dont have authority!")
+                return
             values = map(lambda x: x.get(), self.marketing.marketingValues)
             self.db.insertIntoMarketing(brand, pStyleName, pFlavorName, values)
 
         if (self.curState.get() == "supply"):
+            if(not((privilege == "SUPPLY" or privilege == "ADMIN"))):
+                messagebox.showwarning('Error', "You dont have authority!")
+                return
             values = map(lambda x: x.get(), self.supply.supplyValues)
             self.db.insertIntoSupplyPlanning(brand, pStyleName, pFlavorName, values)
 
         if (self.curState.get() == "sales"):
+            if(not((privilege == "SALES" or privilege == "ADMIN"))):
+                messagebox.showwarning('Error', "You dont have authority!")
+                return
             values = map(lambda x: x.get(), self.sales.salesValues)
             self.db.insertIntoSales(brand, pStyleName, pFlavorName, values)
 
         if (self.curState.get() == "packaging"):
+            if(not((privilege == "PACKAGING" or privilege == "ADMIN"))):
+                messagebox.showwarning('Error', "You dont have authority!")
+                return
             values = map(lambda x: x.get(), self.packaging.packagingValues)
             self.db.insertIntoPackaging(brand, pStyleName, pFlavorName, values)
 
         if (self.curState.get() == "quality"):
+            if(not((privilege == "QUALITY" or privilege == "ADMIN"))):
+                messagebox.showwarning('Error', "You dont have authority!")
+                return
             values = map(lambda x: x.get(), self.quality.qualityValues)
             self.db.insertIntoQuality(brand, pStyleName, pFlavorName, values)
 
         if (self.curState.get() == "finance"):
+            if(not((privilege == "FINANCE" or privilege == "ADMIN"))):
+                messagebox.showwarning('Error', "You dont have authority!")
+                return
             values = map(lambda x: x.get(), self.finance.financeValues)
             self.db.insertIntoFinance(brand, pStyleName, pFlavorName, values)
 
-        if (self.curState.get() == "image"):
+        if (self.curState.get() == "image" and (privilege != "REGULAR")):
+            if (privilege == "REGULAR"):
+                messagebox.showwarning('Error', "You dont have authority!")
+                return
             self.db.insertPhoto(brand, pStyleName, pFlavorName, self.image.photo_bytes)
 
     def marketingOnClick(self):
@@ -392,7 +429,7 @@ class MW:
         self.draw()
 
     def draw(self):
-        self.mainframe.grid(column = 0, row = 0, sticky=(N, W, E, S))
+        self.firstframe.grid(column = 0, row = 0, sticky=(N, W, E, S))
     
     def forget(self):
-        self.mainframe.grid_forget()
+        self.firstframe.grid_forget()
